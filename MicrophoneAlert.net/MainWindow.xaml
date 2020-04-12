@@ -1,0 +1,25 @@
+﻿<Controls:MetroWindow x:Class="MicrophoneAlert.net.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        ResizeMode="NoResize"
+        ShowCloseButton="False" ShowMaxRestoreButton="False" ShowMinButton="False"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
+        ShowTitleBar="False" Topmost="True"
+        mc:Ignorable="d" BorderThickness="0" WindowStartupLocation="Manual" 
+        SaveWindowPosition="True"
+        Padding="0" MaxWidth="30" MaxHeight="30" MinWidth="30" MinHeight="30" Background="Transparent"
+        AllowsTransparency="True">
+    <Window.Resources>
+        <FontFamily x:Key="FontKey">pack://application:,,,/Fonts/#SquareFont</FontFamily>
+    </Window.Resources>
+    
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="0" CornerRadius="0" CaptionHeight="0"/>
+    </WindowChrome.WindowChrome>
+    <Grid MouseDown="Grid_MouseDown" Cursor="Hand" Margin="0" Background="Transparent">
+        <TextBlock Text="{Binding DecibelsValue}" Foreground="{Binding BackgroundColor}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   FontSize="30" FontFamily="{StaticResource FontKey}"/>
+    </Grid>
+</Controls:MetroWindow>

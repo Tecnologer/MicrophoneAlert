@@ -14,7 +14,7 @@ namespace MicrophoneAlert.net
     {
         private string decibelsValue;
         private SolidColorBrush backgroundColor;
-
+        private Configuration config;
         private Timer timer;
         public MainWindow()
         {
@@ -76,7 +76,7 @@ namespace MicrophoneAlert.net
                 Dispatcher.Invoke(delegate
                 {
                     DecibelsValue = ((int)vol).ToString();
-                    var color = vol >= 70 ? Colors.Red : Colors.Lime;
+                    var color = vol >= AudioDevices.Instance.Limit ? Colors.Red : Colors.Lime;
                     BackgroundColor = new SolidColorBrush(color);
                 });
             }
@@ -113,7 +113,12 @@ namespace MicrophoneAlert.net
 
         private void Config_Click(object sender, EventArgs e)
         {
-            var config = new Configuration();
+            if(config != null && config.IsVisible)
+            {
+                config.Close();
+            }
+
+            config = new Configuration();
             config.ShowDialog();
         }
 

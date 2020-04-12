@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MicrophoneAlert.net"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
-        mc:Ignorable="d" Background="White"
-        Title="Configuration" Height="150" Width="250" >
+        mc:Ignorable="d" Background="White" ResizeMode="NoResize"
+        Title="Configuration" Height="150" Width="350" WindowStartupLocation="CenterScreen" SaveWindowPosition="True">
     <Grid Margin="15,10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -21,14 +21,24 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Text="Input:"/>
-        <ComboBox Grid.Column="2"/>
+        <ComboBox Grid.Column="2" ItemsSource="{Binding Devices}" DisplayMemberPath="Name" 
+                  SelectedItem="{Binding SelectedDevice}"/>
 
         <TextBlock Text="Alert Level:" Grid.Row="2"/>
-        <Slider Grid.Column="2" Grid.Row="2" Minimum="0" Maximum="100" TickFrequency="1"/>
+        <Grid Grid.Column="2" Grid.Row="2" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <Slider Name="LimitSlider" Minimum="0" Maximum="100" TickFrequency="1" 
+                    Value="{Binding Path=Limit, Source={x:Static local:AudioDevices.Instance}}"
+                    AutoToolTipPlacement="TopLeft"/>
+            <TextBox Text="{Binding Value, ElementName=LimitSlider}" Grid.Column="1"/>
+        </Grid>
 
         <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10">
-            <Button Content="Save" Margin="10,0"/>
-            <Button Content="Cancel"/>
+            <!--<Button Content="Save" Margin="10,0"/>-->
+            <Button Content="Close"/>
         </StackPanel>
     </Grid>
 </Controls:MetroWindow>

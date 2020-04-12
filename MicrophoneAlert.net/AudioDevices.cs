@@ -1,5 +1,8 @@
 ﻿using NAudio.CoreAudioApi;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 
 namespace MicrophoneAlert.net
 {
@@ -20,15 +23,18 @@ namespace MicrophoneAlert.net
         }
         #endregion
 
-        private MMDeviceCollection mMDevices;
         private string selectedDeviceId;
+        private MMDevice selectedDevice;
+        private SemaphoreSlim semaphore; 
         public AudioDevices()
         {
+            semaphore = new SemaphoreSlim(1, 1);
             SelectedDevice = null;
-            SelectedDeviceId = "{0.0.1.00000000}.{e08360f0-1cb0-4e44-87be-89fc924d260e}";
+            Limit = 70;
+            SelectedDeviceId = null;
         }
 
-        public MMDeviceCollection Devices { get => mMDevices; }
+        public IEnumerable<InputDevice> Devices { get; private set; }
 
         public string SelectedDeviceId
         {
@@ -44,26 +50,71 @@ namespace MicrophoneAlert.net
             }
         }
 
-        public MMDevice SelectedDevice { get; private set; }
+        public int Limit { get; set; }
+
+        public MMDevice SelectedDevice 
+        { 
+            get => selectedDevice; 
+            set 
+            {
+                selectedDevice = value;
+                if (selectedDevice != null && selectedDevice.ID != selectedDeviceId)
+                {
+                    selectedDeviceId = selectedDevice.ID;
+                }
+            } 
+        }
 
         public void UpdateListDevices()
         {
-            var enumerator = new MMDeviceEnumerator();            
-            mMDevices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
-            SelectedDevice = enumerator.GetDevice(SelectedDeviceId);
-            foreach (var wasapi in mMDevices)
+            semaphore.WaitAsync();
+            try
             {
-                Debug.WriteLine($"{wasapi.ID}:{wasapi.DataFlow} {wasapi.FriendlyName} {wasapi.DeviceFriendlyName} {wasapi.State}");
+                var enumerator = new MMDeviceEnumerator();
+                var originalDevices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
+                Devices = originalDevices.ToList().Select(d => new InputDevice(d.ID, d.FriendlyName)).ToList();
+
+                if (string.IsNullOrWhiteSpace(selectedDeviceId))
+                {
+                    SelectedDevice = originalDevices.First();
+                }
+                else
+                {
+
+                    SelectedDevice = enumerator.GetDevice(SelectedDeviceId);
+                }
+
+#if DEBUG
+                foreach (var wasapi in originalDevices)
+                {
+                    Debug.WriteLine($"{wasapi.ID}:{wasapi.DataFlow} {wasapi.FriendlyName} {wasapi.DeviceFriendlyName} {wasapi.State}");
+                }
+#endif
+            }
+            finally
+            {
+                semaphore.Release();
             }
         }
 
         public float GetVolume()
         {
-            if(SelectedDevice == null || SelectedDevice.ID != SelectedDeviceId)
+            semaphore.WaitAsync();
+            try
             {
-                UpdateListDevices();
+                if (SelectedDevice == null || SelectedDevice.ID != SelectedDeviceId)
+                {
+                    UpdateListDevices();
+                }
             }
-            SelectedDevice.AudioEndpointVolume.Mute = false;
+            catch { }
+            finally
+            {
+                semaphore.Release();
+            }
+
+            if (selectedDevice == null) return 0;
+
             return SelectedDevice != null ? SelectedDevice.AudioMeterInformation.MasterPeakValue * 100 : 0;
         }
     }

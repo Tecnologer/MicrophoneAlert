@@ -8,9 +8,10 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
         ShowTitleBar="False" Topmost="True"
         mc:Ignorable="d" BorderThickness="0" WindowStartupLocation="Manual" 
-        SaveWindowPosition="True"
-        Padding="0" MaxWidth="30" MaxHeight="30" MinWidth="30" MinHeight="30" Background="Transparent"
+        SaveWindowPosition="True" SizeToContent="WidthAndHeight"
+        Padding="0"  Background="Transparent"
         AllowsTransparency="True">
+    <!--MaxWidth="30" MaxHeight="30" MinWidth="30" MinHeight="30"-->
     <Window.Resources>
         <FontFamily x:Key="FontKey">pack://application:,,,/Fonts/#SquareFont</FontFamily>
     </Window.Resources>

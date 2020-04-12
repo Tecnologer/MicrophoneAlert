@@ -10,10 +10,17 @@
         mc:Ignorable="d" BorderThickness="0" WindowStartupLocation="Manual" 
         SaveWindowPosition="True" SizeToContent="WidthAndHeight"
         Padding="0"  Background="Transparent"
-        AllowsTransparency="True">
+        AllowsTransparency="True"
+        ShowInTaskbar="False">
     <!--MaxWidth="30" MaxHeight="30" MinWidth="30" MinHeight="30"-->
     <Window.Resources>
         <FontFamily x:Key="FontKey">pack://application:,,,/Fonts/#SquareFont</FontFamily>
+
+        <ContextMenu x:Key="TrayMenu">
+            <MenuItem Header="Config"/>
+            <Separator/>
+            <MenuItem Header="Exit" Click="Exit_Click"/>
+        </ContextMenu>
     </Window.Resources>
     
     <WindowChrome.WindowChrome>

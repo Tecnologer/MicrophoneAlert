@@ -1,7 +1,9 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Timers;
 using System.Windows.Input;
 using System.Windows.Media;
+using WinForm = System.Windows.Forms;
 
 namespace MicrophoneAlert.net
 {
@@ -22,6 +24,8 @@ namespace MicrophoneAlert.net
             timer = new Timer(500);
             timer.Elapsed += Timer_Elapsed;
             timer.Enabled = true;
+
+            TrayIcon();
         }
 
         public SolidColorBrush BackgroundColor
@@ -86,6 +90,36 @@ namespace MicrophoneAlert.net
         {
             if (e.ChangedButton == MouseButton.Left)
                 DragMove();
+        }
+
+        private void TrayIcon()
+        {
+            WinForm.NotifyIcon ni = new WinForm.NotifyIcon();
+            ni.Icon = new System.Drawing.Icon("./main.ico");
+            ni.Visible = true;
+            ni.ContextMenu = new WinForm.ContextMenu();
+            ni.ContextMenu.MenuItems.Add(new WinForm.MenuItem("Configuration", Config_Click));
+            //ni.ContextMenu.MenuItems.Add("-");
+            //ni.ContextMenu.MenuItems.Add(new WinForm.MenuItem("About", About_Click));
+            ni.ContextMenu.MenuItems.Add("-");
+            ni.ContextMenu.MenuItems.Add(new WinForm.MenuItem("Exit", Exit_Click));            
+        }
+
+        private void Exit_Click(object sender, EventArgs e)
+        {
+            timer.Stop();
+            Close();
+        }
+
+        private void Config_Click(object sender, EventArgs e)
+        {
+            var config = new Configuration();
+            config.ShowDialog();
+        }
+
+        private void About_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Windows.Threading;
 
 namespace MicrophoneAlert.net
 {
@@ -32,9 +33,11 @@ namespace MicrophoneAlert.net
             SelectedDevice = null;
             Limit = 70;
             SelectedDeviceId = null;
+            Devices = new List<InputDevice>();
         }
 
-        public IEnumerable<InputDevice> Devices { get; private set; }
+        public List<InputDevice> Devices { get; private set; }
+        public Dispatcher Dispatcher { private get; set; }
 
         public string SelectedDeviceId
         {
@@ -72,7 +75,8 @@ namespace MicrophoneAlert.net
             {
                 var enumerator = new MMDeviceEnumerator();
                 var originalDevices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
-                Devices = originalDevices.ToList().Select(d => new InputDevice(d.ID, d.FriendlyName)).ToList();
+                Devices.Clear();
+                Devices.AddRange(originalDevices.ToList().Select(d => new InputDevice(d.ID, d.FriendlyName)).ToList());
 
                 if (string.IsNullOrWhiteSpace(selectedDeviceId))
                 {
@@ -99,18 +103,9 @@ namespace MicrophoneAlert.net
 
         public float GetVolume()
         {
-            semaphore.WaitAsync();
-            try
+            if (SelectedDevice == null || SelectedDevice.ID != SelectedDeviceId)
             {
-                if (SelectedDevice == null || SelectedDevice.ID != SelectedDeviceId)
-                {
-                    UpdateListDevices();
-                }
-            }
-            catch { }
-            finally
-            {
-                semaphore.Release();
+                UpdateListDevices();
             }
 
             if (selectedDevice == null) return 0;

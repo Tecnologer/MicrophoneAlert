@@ -21,6 +21,7 @@ namespace MicrophoneAlert.net
             InitializeComponent();
             DataContext = this;
 
+            AudioDevices.Instance.Dispatcher = Dispatcher;
             timer = new Timer(500);
             timer.Elapsed += Timer_Elapsed;
             timer.Enabled = true;
@@ -71,10 +72,10 @@ namespace MicrophoneAlert.net
             try
             {
                 timer.Enabled = false;
-                var vol = AudioDevices.Instance.GetVolume();
 
                 Dispatcher.Invoke(delegate
                 {
+                    var vol = AudioDevices.Instance.GetVolume();
                     DecibelsValue = ((int)vol).ToString();
                     var color = vol >= AudioDevices.Instance.Limit ? Colors.Red : Colors.Lime;
                     BackgroundColor = new SolidColorBrush(color);

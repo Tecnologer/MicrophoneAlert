@@ -1,3 +1,5 @@
 MicrophoneAlert.net/bin/
 MicrophoneAlert.net/obj/
 .vs/
+packages/
+settings.json

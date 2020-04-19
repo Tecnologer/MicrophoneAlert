@@ -25,15 +25,29 @@ namespace MicrophoneAlert.net
         #endregion
 
         private string selectedDeviceId;
+        private int limit;
+
         private MMDevice selectedDevice;
-        private SemaphoreSlim semaphore; 
+        private SemaphoreSlim semaphore;
+        private Settings settings;
+
         public AudioDevices()
         {
-            semaphore = new SemaphoreSlim(1, 1);
-            SelectedDevice = null;
-            Limit = 70;
-            SelectedDeviceId = null;
+            semaphore = new SemaphoreSlim(1, 1);            
             Devices = new List<InputDevice>();
+            settings = Settings.Get("./settings.json");
+            
+            if(settings != null)
+            {
+                selectedDeviceId = settings.InputId;
+                limit = settings.Limit;
+            }
+            else
+            {
+                Limit = 70;
+                SelectedDevice = null;
+                SelectedDeviceId = null;
+            }
         }
 
         public List<InputDevice> Devices { get; private set; }
@@ -49,11 +63,24 @@ namespace MicrophoneAlert.net
             {
                 if (selectedDeviceId == value) return;
                 selectedDeviceId = value;
+                if(settings != null)
+                    settings.InputId = value;
                 UpdateListDevices();
             }
         }
 
-        public int Limit { get; set; }
+        public int Limit { get
+            {
+                return limit;
+            }
+            set
+            {
+                if (limit == value) return;
+                limit = value;
+                if (settings != null)
+                    settings.Limit = value;
+            }
+        }
 
         public MMDevice SelectedDevice 
         { 
@@ -99,6 +126,12 @@ namespace MicrophoneAlert.net
             {
                 semaphore.Release();
             }
+        }
+
+        public void SaveSettings()
+        {
+            if (settings != null)
+                settings.Save();
         }
 
         public float GetVolume()

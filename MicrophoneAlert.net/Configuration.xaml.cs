@@ -45,5 +45,15 @@ namespace MicrophoneAlert.net
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void MetroWindow_Closing(object sender, CancelEventArgs e)
+        {
+            AudioDevices.Instance.SaveSettings();
+        }
+
+        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

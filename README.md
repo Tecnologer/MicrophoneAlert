@@ -12,7 +12,7 @@ Get the last version for windows [here][1].
 + **If the value of the input volume exceeds the limit, this will turn red** <br/>
 ![over vol][over]
 
-+ **A tray icon will be created if the app is running**
++ **A tray icon will be created if the app is running**<br>
 ![tray icon][tray]
 
 + **Right-click over tray icon and click over "Configuration"; to open the configuration window** <br>

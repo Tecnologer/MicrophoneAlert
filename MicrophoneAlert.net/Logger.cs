@@ -5,7 +5,19 @@ namespace MicrophoneAlert.net
 {
     internal class Logger
     {
-        private const string path = "./logger.log";
+        private readonly string path;
+        public Logger()
+        {
+            var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            appDataFolder = $"{appDataFolder}\\tecnologer\\MicrophoneAlert";
+
+            if (!Directory.Exists(appDataFolder))
+            {
+                Directory.CreateDirectory(appDataFolder);
+            }
+            path = $"{appDataFolder}\\logger.log";
+        }
+
         internal void Error(Exception ex, string v)
         {
             if (!File.Exists(path))

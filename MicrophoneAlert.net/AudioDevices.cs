@@ -1,6 +1,8 @@
 ﻿using NAudio.CoreAudioApi;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Threading;
@@ -30,12 +32,22 @@ namespace MicrophoneAlert.net
         private MMDevice selectedDevice;
         private SemaphoreSlim semaphore;
         private Settings settings;
+        private readonly string settingPath;
 
         public AudioDevices()
         {
+            var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            appDataFolder = $"{appDataFolder}\\tecnologer\\MicrophoneAlert";
+
+            if (!Directory.Exists(appDataFolder))
+            {
+                Directory.CreateDirectory(appDataFolder);
+            }
+
+            settingPath = $"{appDataFolder}\\settings.json";
             semaphore = new SemaphoreSlim(1, 1);            
             Devices = new List<InputDevice>();
-            settings = Settings.Get("./settings.json");
+            settings = Settings.Get(settingPath);
             
             if(settings != null)
             {
